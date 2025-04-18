@@ -1,3 +1,5 @@
+-- Jack Formato
+
 local Globals = require "src.Globals"
 local Push = require "libs.push"
 local Sounds = require "src.game.Sounds"
