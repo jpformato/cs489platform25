@@ -45,7 +45,13 @@ function love.keypressed(key)
     elseif key == "return" and gameState=="start" then
         gameState = "play"
         stagemanager:setStage(1)
-
+    elseif key == "return" and gameState=="complete" then
+        if stagemanager.index ~= 2 then
+            player.gems = 0
+            HUD.gems = {}
+            gameState = "play"
+            stagemanager:nextStage()
+        end
     else
         player:keypressed(key) 
     end
@@ -65,6 +71,11 @@ function love.update(dt)
         Sounds["game_over"]:play()
     end
 
+    if player.gems == 3 and gameState == "play" then
+        gameState = "complete"
+        stagemanager:currentStage():stopMusic()
+    end
+
     if gameState == "play" then
         stagemanager:currentStage():update(dt)
         player:update(dt, stagemanager:currentStage())
@@ -77,6 +88,8 @@ function love.update(dt)
     elseif gameState == "start" then
 
     elseif gameState == "over" then
+
+    elseif gameState == "complete" then
 
     end
 end
@@ -92,6 +105,8 @@ function love.draw()
         drawStartState()
     elseif gameState == "over" then
         drawGameOverState()
+    elseif gameState == "complete" then
+        drawStageCompleteState()
     else --Error, should not happen
         love.graphics.setColor(1,1,0) -- Yellow
         love.graphics.printf("Error", 0,20,gameWidth,"center")
@@ -138,4 +153,17 @@ function drawGameOverState()
     love.graphics.printf("Total Score "..player.score,0,110,gameWidth,"center")
 
     love.graphics.printf("Press any key for Start Screen", 0,150,gameWidth,"center")
+end
+
+function drawStageCompleteState()
+    love.graphics.setColor(0.3,0.3,0.3)
+    stagemanager:currentStage():drawBg()
+    camera:attach()  -- draw moving objects within attach() - detach()
+    stagemanager:currentStage():draw()
+    --player:draw()
+    camera:detach() -- ends camera effect
+
+    love.graphics.setColor(1,1,1)
+    love.graphics.printf("Stage Complete", titleFont,0,80,gameWidth,"center")
+    love.graphics.printf("Press Enter to Continue", 0,150,gameWidth,"center")
 end
