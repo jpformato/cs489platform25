@@ -1,5 +1,6 @@
 local Class = require "libs.hump.class"
 local Hbox = require "src.game.Hbox"
+local Tween = require "libs.tween"
 
 local Enemy = Class{}
 function Enemy:init()
@@ -19,6 +20,9 @@ function Enemy:init()
     self.damage = 10 -- mob's damage
     self.died = false
     self.score = 100 -- score to kill this mob 
+    self.tweenDamage = nil
+    self.lastDamage = 0
+    self.y2 = 100
 end
 
 function Enemy:getDimensions() -- returns current Width,Height
@@ -57,6 +61,13 @@ function Enemy:draw()
             self:getHitbox():draw()
         end
         love.graphics.setColor(1,1,1) 
+    end
+
+    if self.y2 and self.y2 > self.y - 30 then
+        love.graphics.setColor(1, 0, 0)
+        love.graphics.printf(""..tostring(self.lastDamage),
+            self.x, self.y2, 50, "center")
+        love.graphics.setColor(1,1,1)
     end
         
 end

@@ -4,6 +4,7 @@ local Timer = require "libs.hump.timer"
 local Enemy = require "src.game.mobs.Enemy"
 local Hbox = require "src.game.Hbox"
 local Sounds = require "src.game.Sounds"
+local Tween = require "libs.tween"
 
 -- Idle Animation Resources
 local idleSprite = love.graphics.newImage("graphics/mobs/boar/Idle-Sheet.png")
@@ -81,6 +82,10 @@ function Boar:update(dt, stage)
     end -- end if walking state
     Timer.update(dt) -- attention, Timer.update uses dot, and not :
     self.animations[self.state]:update(dt)
+
+    if self.tweenDamage then
+        self.tweenDamage:update(dt)
+    end
 end -- end function
     
 function Boar:hit(damage, direction)
@@ -90,6 +95,10 @@ function Boar:hit(damage, direction)
     self.hp = self.hp - damage
     self.state = "hit"
     Sounds["mob_hurt"]:play()
+
+    self.y2 = self.y - 20
+    self.lastDamage = damage
+    self.tweenDamage = Tween.new(0.5,self,{y2 = self.y - 30})
 
     if self.hp <= 0 then
         self.died = true
